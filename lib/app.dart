@@ -1,5 +1,5 @@
+import 'package:demeassist/screens/wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:demeassist/screens/splashScreen.dart';
 
 class App extends StatelessWidget {
   @override
@@ -7,8 +7,7 @@ class App extends StatelessWidget {
     return Container(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
-        home: SplashScreen(),
+        home: Wrapper(),
       ),
     );
   }
