@@ -1,4 +1,5 @@
 import 'package:demeassist/screens/auth.dart';
+import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class StartScreen extends StatelessWidget {
@@ -16,36 +17,19 @@ class StartScreen extends StatelessWidget {
                     image: AssetImage(
                       'images/logo.png',
                     ),
-                    fit: BoxFit.fill,
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 40,
-                      top: 70,
-                      child: Text(
-                        "bbooks",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 4,
-                            fontSize: 30,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ],
                 ),
               ),
               SizedBox(
                 height: 50,
               ),
               Text(
-                "Your book shelf",
+                "DemeAssist",
                 style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 40,
                     fontWeight: FontWeight.w600,
-                    letterSpacing: 2,
-                    color: Colors.white),
+                    letterSpacing: 3,
+                    color: Colors.black),
               ),
               SizedBox(
                 height: 20,
@@ -55,12 +39,12 @@ class StartScreen extends StatelessWidget {
                 child: Container(
                   margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
                   child: Text(
-                    "Create your account and start adding the books.",
+                    "Always remember that you are absolutely unique.",
                     style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         letterSpacing: 2,
-                        color: Colors.white),
+                        color: Colors.black),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -77,17 +61,18 @@ class StartScreen extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width * 0.75,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: primaryViolet,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
                     child: Text(
-                      "Next",
+                      "NEXT",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w500),
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
