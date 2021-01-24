@@ -3,8 +3,6 @@ import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-import 'home.dart';
-
 class Register extends StatefulWidget {
   @override
   _RegisterState createState() => _RegisterState();

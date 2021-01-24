@@ -1,4 +1,10 @@
+import 'dart:async';
+
+import 'package:demeassist/screens/home.dart';
+import 'package:demeassist/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Verify extends StatefulWidget {
   @override
@@ -6,8 +12,120 @@ class Verify extends StatefulWidget {
 }
 
 class _VerifyState extends State<Verify> {
+  final auth = FirebaseAuth.instance;
+  User user;
+  Timer timer;
+
+  @override
+  void initState() {
+    user = auth.currentUser;
+    user.sendEmailVerification();
+
+    timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      emailVerified();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  Future<void> emailVerified() async {
+    this.user = this.auth.currentUser;
+    await this.user.reload();
+    if (user.emailVerified) {
+      timer.cancel();
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Container(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.50,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage('images/verify.png')),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 30,
+                    right: 1,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => Home())),
+                      child: Container(
+                          child: Icon(
+                        Icons.arrow_right_rounded,
+                        color: Colors.white,
+                        size: 60,
+                      )),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+                children: [
+                  Padding(
+                    // padding: const EdgeInsets.only(top: 50),
+                    padding: EdgeInsets.all(50),
+                    child: Text(
+                      "An email has been\nsent.Please check \nthe inbox.",
+                      style: TextStyle(
+                          color: primaryViolet,
+                          fontSize: 25,
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  SpinKitCubeGrid(
+                    color: primaryViolet,
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      user.sendEmailVerification();
+                      SnackBar(
+                        content: Text(
+                          "Another email has been sent!!!",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: primaryViolet,
+                      );
+                    },
+                    child: Text(
+                      "Resend Email",
+                      style: TextStyle(
+                          color: primaryViolet,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * .27,
+                    child: Divider(
+                      thickness: 2,
+                      color: primaryViolet,
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

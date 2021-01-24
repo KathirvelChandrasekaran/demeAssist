@@ -1,8 +1,8 @@
-// import 'package:demeassist/models/user.dart';
-// import 'package:demeassist/screens/home.dart';
+import 'package:demeassist/models/user.dart';
+import 'package:demeassist/screens/home.dart';
 import 'package:demeassist/screens/startScreen.dart';
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 
 class Wrapper extends StatefulWidget {
   @override
@@ -12,11 +12,10 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
-    // final user = Provider.of<UserModel>(context);
-    // if (user == null)
-    //   return StartScreen();
-    // else
-    //   return Home();
-    return StartScreen();
+    final user = Provider.of<UserModel>(context);
+    if (user == null)
+      return StartScreen();
+    else
+      return Home();
   }
 }
