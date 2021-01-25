@@ -9,36 +9,50 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-      iconTheme: IconThemeData(
-        color: primaryViolet,
-      ),
-      backgroundColor: Colors.white10,
-      elevation: 0,
-      centerTitle: true,
-      title: Text(
-        "HOME",
-        style: TextStyle(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
           color: primaryViolet,
-          fontWeight: FontWeight.bold,
-          fontSize: 20.0,
-          letterSpacing: 2,
+        ),
+        backgroundColor: Colors.white10,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          "HOME",
+          style: TextStyle(
+            color: primaryViolet,
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+            letterSpacing: 2,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await authService.signOut();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => Wrapper(),
+                ),
+              );
+            },
+            tooltip: "Logout",
+            icon: FaIcon(FontAwesomeIcons.signOutAlt),
+          )
+        ],
+      ),
+      floatingActionButton: Tooltip(
+        message: "Add Patient",
+        verticalOffset: 40,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed((context), '/addPatient');
+          },
+          child: FaIcon(
+            FontAwesomeIcons.plus,
+          ),
+          backgroundColor: primaryViolet,
         ),
       ),
-      actions: [
-        IconButton(
-          onPressed: () async {
-            await authService.signOut();
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => Wrapper(),
-              ),
-            );
-          },
-          tooltip: "Logout",
-          icon: FaIcon(FontAwesomeIcons.signOutAlt),
-        )
-      ],
-    ));
+    );
   }
 }

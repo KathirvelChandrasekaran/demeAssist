@@ -1,4 +1,5 @@
 import 'package:demeassist/models/user.dart';
+import 'package:demeassist/screens/addPatient.dart';
 import 'package:demeassist/screens/home.dart';
 import 'package:demeassist/screens/login.dart';
 import 'package:demeassist/screens/register.dart';
@@ -22,7 +23,8 @@ class App extends StatelessWidget {
         routes: {
           '/home': (context) => Home(),
           '/login': (context) => Login(),
-          '/register': (context) => Register()
+          '/register': (context) => Register(),
+          '/addPatient': (context) => AddPatient()
         },
       ),
     );
