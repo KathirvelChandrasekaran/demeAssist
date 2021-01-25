@@ -1,5 +1,3 @@
-import 'package:demeassist/screens/login.dart';
-import 'package:demeassist/screens/register.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
 

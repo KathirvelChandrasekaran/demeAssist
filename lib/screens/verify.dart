@@ -94,32 +94,18 @@ class _VerifyState extends State<Verify> {
                   SizedBox(
                     height: 50,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      user.sendEmailVerification();
-                      SnackBar(
-                        content: Text(
-                          "Another email has been sent!!!",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: primaryViolet,
-                      );
-                    },
-                    child: Text(
-                      "Resend Email",
-                      style: TextStyle(
-                          color: primaryViolet,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * .27,
-                    child: Divider(
-                      thickness: 2,
-                      color: primaryViolet,
-                    ),
-                  )
+                  // IconButton(
+                  //     icon: Icon(Icons.mail),
+                  //     onPressed: () {
+                  //       user.sendEmailVerification();
+                  //     }),
+                  // Container(
+                  //   width: MediaQuery.of(context).size.width * .27,
+                  //   child: Divider(
+                  //     thickness: 2,
+                  //     color: primaryViolet,
+                  //   ),
+                  // )
                 ],
               ),
             )
