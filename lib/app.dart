@@ -1,4 +1,7 @@
 import 'package:demeassist/models/user.dart';
+import 'package:demeassist/screens/home.dart';
+import 'package:demeassist/screens/login.dart';
+import 'package:demeassist/screens/register.dart';
 import 'package:demeassist/screens/wrapper.dart';
 import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
@@ -16,6 +19,11 @@ class App extends StatelessWidget {
           primaryColor: primaryViolet,
         ),
         home: Wrapper(),
+        routes: {
+          '/home': (context) => Home(),
+          '/login': (context) => Login(),
+          '/register': (context) => Register()
+        },
       ),
     );
   }

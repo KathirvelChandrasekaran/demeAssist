@@ -19,10 +19,11 @@ class Home extends StatelessWidget {
       title: Text(
         "HOME",
         style: TextStyle(
-            color: primaryViolet,
-            fontWeight: FontWeight.bold,
-            fontSize: 20.0,
-            letterSpacing: 2),
+          color: primaryViolet,
+          fontWeight: FontWeight.bold,
+          fontSize: 20.0,
+          letterSpacing: 2,
+        ),
       ),
       actions: [
         IconButton(

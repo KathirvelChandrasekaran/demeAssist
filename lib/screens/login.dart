@@ -1,6 +1,7 @@
 import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'home.dart';
 
@@ -46,6 +47,16 @@ class _LoginState extends State<Login> {
               fontSize: 20.0,
               letterSpacing: 2),
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await authService.signOut();
+              Navigator.pushReplacementNamed(context, '/register');
+            },
+            tooltip: "Register",
+            icon: Icon(Icons.app_registration),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -129,9 +140,7 @@ class _LoginState extends State<Login> {
                             this.loading = true;
                           });
                           if (this.error == "")
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => Home()));
+                            Navigator.pushReplacementNamed(context, '/home');
                           else
                             setState(() {
                               this.loading = false;

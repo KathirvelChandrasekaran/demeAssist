@@ -45,6 +45,16 @@ class _RegisterState extends State<Register> {
               fontSize: 20.0,
               letterSpacing: 2),
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await authService.signOut();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            tooltip: "Login",
+            icon: Icon(Icons.login),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Container(

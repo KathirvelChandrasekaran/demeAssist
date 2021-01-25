@@ -31,8 +31,7 @@ class _AuthenticationState extends State<Authentication> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => Login()));
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.08,
@@ -63,8 +62,7 @@ class _AuthenticationState extends State<Authentication> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => Register()));
+                  Navigator.pushReplacementNamed(context, '/register');
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.08,
