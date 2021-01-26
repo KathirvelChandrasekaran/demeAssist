@@ -1,6 +1,14 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:logger/logger.dart';
 
 class AddPatient extends StatefulWidget {
   @override
@@ -14,10 +22,84 @@ class _AddPatientState extends State<AddPatient> {
 
   final _formKey = GlobalKey<FormState>();
 
+  var logger = Logger();
+
   String name = '';
   String gender = 'Male';
   int age = 0;
   int mobile = 0;
+  int genderVal = 0;
+  File _image;
+  bool enabled = true;
+  List errors;
+  String imageUrl;
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = image;
+
+      print('Image Path $_image');
+    });
+  }
+
+  void _genderStateHandle(int val) {
+    setState(() {
+      genderVal = val;
+
+      switch (genderVal) {
+        case 0:
+          gender = "Male";
+          break;
+        case 1:
+          gender = "Female";
+          break;
+        case 2:
+          gender = "Other";
+          break;
+        default:
+      }
+    });
+  }
+
+  Future<bool> addPatient(
+      String patientName, String gender, int age, int mobile) async {
+    setState(() => enabled = false);
+    try {
+      String uid = FirebaseAuth.instance.currentUser.uid;
+      String fileName = basename(_image.path);
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child(fileName);
+      firebaseStorageRef.putFile(_image);
+      UploadTask uploadTask = firebaseStorageRef.putFile(_image);
+
+      TaskSnapshot taskSnapshot =
+          await uploadTask.whenComplete(() => print("Upload completed"));
+      String imageURL = await taskSnapshot.ref.getDownloadURL();
+
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection("PatientDetails").doc();
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(documentReference);
+        if (!snapshot.exists) {
+          documentReference.set({
+            "uid": uid,
+            "patientName": patientName,
+            "imageURL": imageURL,
+            "mobile": mobile,
+            "age": age,
+            "gender": gender
+          });
+          return true;
+        }
+      });
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +131,45 @@ class _AddPatientState extends State<AddPatient> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Stack(
+                children: [
+                  Container(
+                    child: CircleAvatar(
+                      radius: 100,
+                      backgroundImage: (_image != null)
+                          ? FileImage(_image)
+                          : AssetImage('images/User.png'),
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
+                  Positioned(
+                    top: MediaQuery.of(context).size.height * 0.15,
+                    right: -(MediaQuery.of(context).size.width * 0.05),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.20,
+                      child: IconButton(
+                        onPressed: () {
+                          getImage();
+                          if (_image.path == null)
+                            setState(() {
+                              imageUrl =
+                                  "https://firebasestorage.googleapis.com/v0/b/demeassist.appspot.com/o/User.png?alt=media&token=c1237149-2251-430d-a714-2b0a0bfd3188";
+                            });
+                        },
+                        icon: FaIcon(
+                          FontAwesomeIcons.camera,
+                          size: 30,
+                          color: primaryViolet,
+                        ),
+                        tooltip: "Upload image",
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.01,
+              ),
               Container(
                 child: Form(
                   key: _formKey,
@@ -61,10 +182,18 @@ class _AddPatientState extends State<AddPatient> {
                         ),
                         child: TextFormField(
                           keyboardType: TextInputType.name,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Name must not be empty.';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
-                            setState(() {
-                              name = val;
-                            });
+                            setState(
+                              () {
+                                name = val;
+                              },
+                            );
                           },
                           controller: _nameController,
                           decoration: InputDecoration(
@@ -83,10 +212,18 @@ class _AddPatientState extends State<AddPatient> {
                         ),
                         child: TextFormField(
                           keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Age must not be empty.';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
-                            setState(() {
-                              age = int.parse(val);
-                            });
+                            setState(
+                              () {
+                                age = int.parse(val);
+                              },
+                            );
                           },
                           controller: _ageController,
                           decoration: InputDecoration(
@@ -104,11 +241,19 @@ class _AddPatientState extends State<AddPatient> {
                           right: MediaQuery.of(context).size.width * 0.10,
                         ),
                         child: TextFormField(
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Mobile must not be empty.';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
-                            setState(() {
-                              age = int.parse(val);
-                            });
+                            setState(
+                              () {
+                                mobile = int.parse(val);
+                              },
+                            );
                           },
                           controller: _mobileController,
                           decoration: InputDecoration(
@@ -121,64 +266,89 @@ class _AddPatientState extends State<AddPatient> {
                         ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01,
+                        height: 10,
                       ),
                       Container(
                         padding: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * 0.20,
+                          left: MediaQuery.of(context).size.width * 0.10,
                           right: MediaQuery.of(context).size.width * 0.10,
                         ),
-                        child: DropdownButtonFormField(
-                          focusColor: Colors.grey[200],
-                          value: gender,
-                          items: [
-                            DropdownMenuItem(
-                              child: Text("Male"),
-                              value: "Male",
+                        child: Row(
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.venusMars,
+                              color: Colors.grey[500],
                             ),
-                            DropdownMenuItem(
-                              child: Text("Female"),
-                              value: "Female",
+                            Radio(
+                              value: 0,
+                              groupValue: genderVal,
+                              onChanged: _genderStateHandle,
+                              activeColor: primaryViolet,
                             ),
-                            DropdownMenuItem(
-                              child: Text("Others"),
-                              value: "Others",
+                            Text(
+                              "Male",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Radio(
+                              value: 1,
+                              groupValue: genderVal,
+                              onChanged: _genderStateHandle,
+                              activeColor: primaryViolet,
+                            ),
+                            Text(
+                              "Female",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Radio(
+                              value: 2,
+                              groupValue: genderVal,
+                              onChanged: _genderStateHandle,
+                              activeColor: primaryViolet,
+                            ),
+                            Text(
+                              "Other",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                              ),
                             ),
                           ],
-                          onChanged: (val) {
-                            setState(() {
-                              gender = val;
-                            });
-                          },
-                          // hint: Text("Select the gender"),
-                          elevation: 2,
-                          isDense: true,
-                          iconSize: 40.0,
                         ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.40,
+                        height: MediaQuery.of(context).size.height * 0.10,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          GestureDetector(
-                            onTap: () async {},
-                            child: Container(
-                              height: MediaQuery.of(context).size.height * 0.08,
-                              width: MediaQuery.of(context).size.width * 0.75,
-                              decoration: BoxDecoration(
-                                color: primaryViolet,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "ADD PATIENT",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w500,
+                          Tooltip(
+                            message: "Save patient details",
+                            verticalOffset: 40,
+                            child: GestureDetector(
+                              onTap: () async {
+                                if (_formKey.currentState.validate())
+                                  await addPatient(name, gender, age, mobile);
+                              },
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.08,
+                                width: MediaQuery.of(context).size.width * 0.75,
+                                decoration: BoxDecoration(
+                                  color: primaryViolet,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "ADD PATIENT",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -189,7 +359,10 @@ class _AddPatientState extends State<AddPatient> {
                     ],
                   ),
                 ),
-              )
+              ),
+              SizedBox(
+                height: 20,
+              ),
             ],
           ),
         ),
