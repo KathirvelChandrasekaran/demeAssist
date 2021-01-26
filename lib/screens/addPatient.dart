@@ -77,8 +77,11 @@ class _AddPatientState extends State<AddPatient> {
           await uploadTask.whenComplete(() => print("Upload completed"));
       String imageURL = await taskSnapshot.ref.getDownloadURL();
 
-      DocumentReference documentReference =
-          FirebaseFirestore.instance.collection("PatientDetails").doc();
+      DocumentReference documentReference = FirebaseFirestore.instance
+          .collection("User")
+          .doc(uid)
+          .collection("PatientDetails")
+          .doc();
       FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot snapshot = await transaction.get(documentReference);
         if (!snapshot.exists) {
