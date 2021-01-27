@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/utils/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:logger/logger.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:logger/logger.dart';
 
 class AddPatient extends StatefulWidget {
   @override
@@ -34,15 +34,6 @@ class _AddPatientState extends State<AddPatient> {
   List errors;
   String imageUrl;
 
-  Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _image = image;
-
-      print('Image Path $_image');
-    });
-  }
-
   void _genderStateHandle(int val) {
     setState(() {
       genderVal = val;
@@ -62,9 +53,18 @@ class _AddPatientState extends State<AddPatient> {
     });
   }
 
-  Future<bool> addPatient(
-      String patientName, String gender, int age, int mobile) async {
-    setState(() => enabled = false);
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = image;
+    });
+
+    print('Image Path $_image');
+  }
+
+  Future<bool> addPatient(String patientName, String gender, int age,
+      int mobile, BuildContext context) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
       String fileName = basename(_image.path);
@@ -93,6 +93,7 @@ class _AddPatientState extends State<AddPatient> {
             "age": age,
             "gender": gender
           });
+          Navigator.pop(context);
           return true;
         }
       });
@@ -114,7 +115,7 @@ class _AddPatientState extends State<AddPatient> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "Add Patient",
+          "ADD PATIENT",
           style: TextStyle(
             color: primaryViolet,
             fontWeight: FontWeight.bold,
@@ -333,7 +334,9 @@ class _AddPatientState extends State<AddPatient> {
                             child: GestureDetector(
                               onTap: () async {
                                 if (_formKey.currentState.validate())
-                                  await addPatient(name, gender, age, mobile);
+                                  await addPatient(
+                                      name, gender, age, mobile, context);
+                                // Navigator.pop(context);
                               },
                               child: Container(
                                 height:

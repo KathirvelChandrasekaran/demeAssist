@@ -25,6 +25,7 @@ class AuthService {
       } else if (e.code == 'email-already-in-use') {
         return 'The account already exists for that email.';
       }
+      return 'success';
     } catch (e) {
       print(e.toString());
       return null;
@@ -44,6 +45,7 @@ class AuthService {
         return 'Wrong password.';
       }
       print(e.code.toString());
+      return 'success';
     } catch (e) {
       print(e.toString());
       return null;
