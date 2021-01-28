@@ -1,17 +1,18 @@
 import 'dart:async';
 
-import 'package:demeassist/screens/editProfile.dart';
+import 'package:demeassist/screens/home.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class Verify extends StatefulWidget {
+class ResendMail extends StatefulWidget {
   @override
-  _VerifyState createState() => _VerifyState();
+  _ResendMailState createState() => _ResendMailState();
 }
 
-class _VerifyState extends State<Verify> {
+class _ResendMailState extends State<ResendMail> {
+  @override
   final auth = FirebaseAuth.instance;
   User user;
   Timer timer;
@@ -40,7 +41,7 @@ class _VerifyState extends State<Verify> {
       timer.cancel();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => EditProfile(),
+          builder: (context) => Home(),
         ),
       );
     }
@@ -49,6 +50,14 @@ class _VerifyState extends State<Verify> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: primaryViolet,
+        ),
+        backgroundColor: Colors.white10,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: Container(
         child: Column(
           children: [
@@ -56,28 +65,6 @@ class _VerifyState extends State<Verify> {
               height: MediaQuery.of(context).size.height * 0.50,
               decoration: BoxDecoration(
                 image: DecorationImage(image: AssetImage('images/verify.png')),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 30,
-                    right: 1,
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => EditProfile(),
-                        ),
-                      ),
-                      child: Container(
-                        child: Icon(
-                          Icons.arrow_right_rounded,
-                          color: primaryViolet,
-                          size: 60,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
             Container(
@@ -101,18 +88,6 @@ class _VerifyState extends State<Verify> {
                   SizedBox(
                     height: 50,
                   ),
-                  // IconButton(
-                  //     icon: Icon(Icons.mail),
-                  //     onPressed: () {
-                  //       user.sendEmailVerification();
-                  //     }),
-                  // Container(
-                  //   width: MediaQuery.of(context).size.width * .27,
-                  //   child: Divider(
-                  //     thickness: 2,
-                  //     color: primaryViolet,
-                  //   ),
-                  // )
                 ],
               ),
             )

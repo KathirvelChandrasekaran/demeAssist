@@ -4,6 +4,7 @@ import 'package:demeassist/screens/editPatient.dart';
 import 'package:demeassist/screens/home.dart';
 import 'package:demeassist/screens/login.dart';
 import 'package:demeassist/screens/register.dart';
+import 'package:demeassist/screens/resendMail.dart';
 import 'package:demeassist/screens/wrapper.dart';
 import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
@@ -27,6 +28,7 @@ class App extends StatelessWidget {
           '/register': (context) => Register(),
           '/addPatient': (context) => AddPatient(),
           '/editPatient': (context) => EditPatient(),
+          '/resendMail': (context) => ResendMail()
         },
       ),
     );
