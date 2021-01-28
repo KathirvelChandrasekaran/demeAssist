@@ -91,7 +91,7 @@ class _AddPatientState extends State<AddPatient> {
             "imageURL": imageURL,
             "mobile": mobile,
             "age": age,
-            "gender": gender
+            "gender": gender,
           });
           Navigator.pop(context);
           return true;

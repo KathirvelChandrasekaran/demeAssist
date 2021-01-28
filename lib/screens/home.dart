@@ -85,6 +85,7 @@ class _HomeState extends State<Home> {
                   itemBuilder: (context, index) {
                     DocumentSnapshot patienDetails =
                         snapshot.data.documents[index];
+                    String _id = patienDetails.id;
                     return Container(
                       child: GestureDetector(
                         onTap: () {
@@ -97,6 +98,7 @@ class _HomeState extends State<Home> {
                                 imageURL: patienDetails['imageURL'],
                                 mobile: patienDetails['mobile'],
                                 patientName: patienDetails['patientName'],
+                                docID: _id,
                               ),
                             ),
                           );
