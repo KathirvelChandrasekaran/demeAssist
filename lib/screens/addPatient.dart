@@ -152,6 +152,7 @@ class _AddPatientState extends State<AddPatient> {
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.20,
                       child: IconButton(
+                        color: Colors.white,
                         onPressed: () {
                           getImage();
                           if (_image.path == null)

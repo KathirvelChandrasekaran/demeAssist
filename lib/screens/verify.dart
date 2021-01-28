@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:demeassist/screens/home.dart';
+import 'package:demeassist/screens/editProfile.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +38,11 @@ class _VerifyState extends State<Verify> {
     await this.user.reload();
     if (user.emailVerified) {
       timer.cancel();
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => EditProfile(),
+        ),
+      );
     }
   }
 
@@ -61,11 +64,12 @@ class _VerifyState extends State<Verify> {
                     right: 1,
                     child: GestureDetector(
                       onTap: () => Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => Home())),
+                          MaterialPageRoute(
+                              builder: (context) => EditProfile())),
                       child: Container(
                           child: Icon(
                         Icons.arrow_right_rounded,
-                        color: Colors.white,
+                        color: primaryViolet,
                         size: 60,
                       )),
                     ),

@@ -9,22 +9,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
-class EditPatient extends StatefulWidget {
-  String patientName, gender, imageURL, docID;
-  int mobile, age;
-
-  EditPatient(
-      {this.patientName,
-      this.gender,
-      this.imageURL,
-      this.mobile,
-      this.age,
-      this.docID});
+class EditProfile extends StatefulWidget {
   @override
-  _EditPatientState createState() => _EditPatientState();
+  _EditProfileState createState() => _EditProfileState();
 }
 
-class _EditPatientState extends State<EditPatient> {
+class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
@@ -69,8 +59,8 @@ class _EditPatientState extends State<EditPatient> {
     print('Image Path $_image');
   }
 
-  Future<bool> editPatient(String patientName, String gender, int age,
-      int mobile, BuildContext context) async {
+  Future<bool> addUser(String userName, String gender, int age, int mobile,
+      BuildContext context) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
       String fileName = basename(_image.path);
@@ -83,44 +73,31 @@ class _EditPatientState extends State<EditPatient> {
           await uploadTask.whenComplete(() => print("Upload completed"));
       String imageURL = await taskSnapshot.ref.getDownloadURL();
 
-      await FirebaseFirestore.instance
+      DocumentReference documentReference = FirebaseFirestore.instance
           .collection("User")
           .doc(uid)
-          .collection("PatientDetails")
-          .doc(widget.docID)
-          .update({
+          .collection("UserDetails")
+          .doc();
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(documentReference);
+        if (!snapshot.exists) {
+          documentReference.set({
             "uid": uid,
-            "patientName": patientName,
+            "userName": userName,
             "imageURL": imageURL,
             "mobile": mobile,
             "age": age,
-            "gender": gender
-          })
-          .then((value) => print("Value updated"))
-          .catchError((err) => print(err));
-      Navigator.pop(context);
+            "gender": gender,
+          });
+          Navigator.pushReplacementNamed(context, '/home');
+          return true;
+        }
+      });
       return true;
     } catch (e) {
       print(e.toString());
       return false;
     }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _nameController.text = widget.patientName;
-    _mobileController.text = widget.mobile.toString();
-    _ageController.text = widget.age.toString();
-    gender = widget.gender;
-    setState(() {
-      this.name = widget.patientName;
-      this.age = widget.age;
-      this.gender = widget.gender;
-      this.imageUrl = widget.imageURL;
-      this.mobile = widget.mobile;
-    });
   }
 
   @override
@@ -134,7 +111,7 @@ class _EditPatientState extends State<EditPatient> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "EDIT PATIENT",
+          "EDIT PROFILE",
           style: TextStyle(
             color: primaryViolet,
             fontWeight: FontWeight.bold,
@@ -161,7 +138,7 @@ class _EditPatientState extends State<EditPatient> {
                       radius: 100,
                       backgroundImage: (_image != null)
                           ? FileImage(_image)
-                          : NetworkImage(widget.imageURL),
+                          : AssetImage('images/User.png'),
                       backgroundColor: Colors.transparent,
                     ),
                   ),
@@ -221,7 +198,7 @@ class _EditPatientState extends State<EditPatient> {
                           },
                           controller: _nameController,
                           decoration: InputDecoration(
-                            labelText: "Patient Name",
+                            labelText: "User Name",
                             icon: FaIcon(
                               FontAwesomeIcons.user,
                               size: 20,
@@ -349,14 +326,12 @@ class _EditPatientState extends State<EditPatient> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Tooltip(
-                            message: "Edit patient details",
+                            message: "Save details",
                             verticalOffset: 40,
                             child: GestureDetector(
                               onTap: () async {
-                                if (_formKey.currentState.validate())
-                                  await editPatient(
-                                      name, gender, age, mobile, context);
-                                // Navigator.pop(context);
+                                await addUser(
+                                    name, gender, age, mobile, context);
                               },
                               child: Container(
                                 height:
@@ -368,7 +343,7 @@ class _EditPatientState extends State<EditPatient> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "EDIT PATIENT",
+                                    "SAVE PROFILE",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Colors.white,
@@ -385,9 +360,6 @@ class _EditPatientState extends State<EditPatient> {
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
               ),
             ],
           ),

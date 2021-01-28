@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/screens/editPatient.dart';
+import 'package:demeassist/screens/userProfile.dart';
 import 'package:demeassist/screens/wrapper.dart';
 import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
@@ -59,6 +60,17 @@ class _HomeState extends State<Home> {
         ),
         actions: [
           IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserProfile(),
+                ),
+              );
+            },
+            tooltip: "Profile",
+            icon: FaIcon(FontAwesomeIcons.userCircle),
+          ),
+          IconButton(
             onPressed: () async {
               await authService.signOut();
               Navigator.of(context).pushReplacement(
@@ -69,7 +81,7 @@ class _HomeState extends State<Home> {
             },
             tooltip: "Logout",
             icon: FaIcon(FontAwesomeIcons.signOutAlt),
-          )
+          ),
         ],
       ),
       body: !found
