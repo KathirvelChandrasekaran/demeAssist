@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demeassist/screens/editProfile.dart';
 import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,98 +39,146 @@ class UserProfile extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           return ListView.builder(
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index) {
-                DocumentSnapshot userDetails = snapshot.data.documents[index];
-                return Container(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
+            itemCount: snapshot.data.documents.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot userDetails = snapshot.data.documents[index];
+              return Container(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    CircleAvatar(
+                      radius: 100,
+                      backgroundImage: NetworkImage(userDetails['imageURL']),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    Text(
+                      userDetails['userName'],
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    Text(
+                      userDetails['age'].toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
                       ),
-                      CircleAvatar(
-                        radius: 100,
-                        backgroundImage: NetworkImage(userDetails['imageURL']),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    Text(
+                      userDetails['gender'].toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
                       ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    Text(
+                      userDetails['mobile'].toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
                       ),
-                      Text(
-                        userDetails['userName'],
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 50),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Text(
-                        userDetails['age'].toString(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Text(
-                        userDetails['gender'].toString(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Text(
-                        userDetails['mobile'].toString(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      FirebaseAuth.instance.currentUser.emailVerified
-                          ? Container(
-                              child: Text(
-                                'Email Verified',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.green),
-                              ),
-                            )
-                          : Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: ButtonTheme(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.07,
-                                child: RaisedButton.icon(
-                                  icon: FaIcon(
-                                    FontAwesomeIcons.telegram,
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    FirebaseAuth.instance.currentUser.emailVerified
+                        ? Container(
+                            child: Text(
+                              'Email Verified',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.green),
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: ButtonTheme(
+                              height: MediaQuery.of(context).size.height * 0.07,
+                              child: RaisedButton.icon(
+                                icon: FaIcon(
+                                  FontAwesomeIcons.telegram,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/resendMail');
+                                },
+                                label: Text(
+                                  "Send another email",
+                                  style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 19,
                                   ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/resendMail');
-                                  },
-                                  label: Text(
-                                    "Send another email",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 19,
-                                    ),
+                                ),
+                                color: primaryViolet,
+                              ),
+                            ),
+                          ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Tooltip(
+                          message: "Edit details",
+                          verticalOffset: 40,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfile(
+                                    age: userDetails['age'].toString(),
+                                    gender: userDetails['gender'],
+                                    imageURL: userDetails['imageURL'],
+                                    mobile: userDetails['mobile'].toString(),
+                                    userName: userDetails['userName'],
+                                    edit: true,
                                   ),
-                                  color: primaryViolet,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              width: MediaQuery.of(context).size.width * 0.75,
+                              decoration: BoxDecoration(
+                                color: primaryViolet,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "EDIT PROFILE",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ),
-                    ],
-                  ),
-                );
-              });
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
       ),
     );

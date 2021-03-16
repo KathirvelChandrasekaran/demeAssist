@@ -54,8 +54,11 @@ class StartScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => Authentication()));
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => Authentication(),
+                    ),
+                  );
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.08,

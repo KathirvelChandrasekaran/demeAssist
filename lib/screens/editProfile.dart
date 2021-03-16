@@ -10,6 +10,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
 class EditProfile extends StatefulWidget {
+  String userName, gender, imageURL, mobile, age;
+  bool edit = false;
+
+  EditProfile(
+      {this.age,
+      this.gender,
+      this.imageURL,
+      this.mobile,
+      this.userName,
+      this.edit});
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -22,13 +32,32 @@ class _EditProfileState extends State<EditProfile> {
 
   String name = '';
   String gender = 'Male';
-  int age = 0;
-  int mobile = 0;
+  String age = '';
+  String mobile = '';
   int genderVal = 0;
   File _image;
   bool enabled = true;
   List errors;
   String imageUrl;
+  bool edit;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _nameController.text = widget.userName;
+    _mobileController.text = widget.mobile.toString();
+    _ageController.text = widget.age.toString();
+    gender = widget.gender;
+    setState(() {
+      this.name = widget.userName;
+      this.age = widget.age;
+      this.gender = widget.gender;
+      this.imageUrl = widget.imageURL;
+      this.mobile = widget.mobile;
+      this.edit = widget.edit;
+    });
+  }
 
   void _genderStateHandle(int val) {
     setState(() {
@@ -59,8 +88,8 @@ class _EditProfileState extends State<EditProfile> {
     print('Image Path $_image');
   }
 
-  Future<bool> addUser(String userName, String gender, int age, int mobile,
-      BuildContext context) async {
+  Future<bool> addUser(String userName, String gender, String age,
+      String mobile, BuildContext context) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
       String fileName = basename(_image.path);
@@ -138,7 +167,9 @@ class _EditProfileState extends State<EditProfile> {
                       radius: 100,
                       backgroundImage: (_image != null)
                           ? FileImage(_image)
-                          : AssetImage('images/User.png'),
+                          : edit == true
+                              ? NetworkImage(this.imageUrl)
+                              : AssetImage('images/User.png'),
                       backgroundColor: Colors.transparent,
                     ),
                   ),
@@ -222,7 +253,7 @@ class _EditProfileState extends State<EditProfile> {
                           onChanged: (val) {
                             setState(
                               () {
-                                age = int.parse(val);
+                                age = val;
                               },
                             );
                           },
@@ -252,7 +283,7 @@ class _EditProfileState extends State<EditProfile> {
                           onChanged: (val) {
                             setState(
                               () {
-                                mobile = int.parse(val);
+                                mobile = val;
                               },
                             );
                           },
@@ -320,7 +351,7 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.10,
+                        height: MediaQuery.of(context).size.height * 0.17,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

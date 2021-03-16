@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demeassist/screens/medicineRemainder.dart';
+import 'package:demeassist/screens/remainderResult.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,8 +11,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
+import 'package:demeassist/screens/map.dart';
+
 class EditPatient extends StatefulWidget {
-  String patientName, gender, imageURL, docID;
+  String patientName, gender, imageURL, docID, email;
   int mobile, age;
 
   EditPatient(
@@ -19,7 +23,8 @@ class EditPatient extends StatefulWidget {
       this.imageURL,
       this.mobile,
       this.age,
-      this.docID});
+      this.docID,
+      this.email});
   @override
   _EditPatientState createState() => _EditPatientState();
 }
@@ -98,7 +103,22 @@ class _EditPatientState extends State<EditPatient> {
           })
           .then((value) => print("Value updated"))
           .catchError((err) => print(err));
+      // Navigator.pop(context);
+      await FirebaseFirestore.instance
+          .collection("PatientDetails")
+          .doc()
+          .update({
+            "uid": uid,
+            "patientName": patientName,
+            "imageURL": imageURL,
+            "mobile": mobile,
+            "age": age,
+            "gender": gender
+          })
+          .then((value) => print("Value updated"))
+          .catchError((err) => print(err));
       Navigator.pop(context);
+
       return true;
     } catch (e) {
       print(e.toString());
@@ -343,7 +363,7 @@ class _EditPatientState extends State<EditPatient> {
                         ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.10,
+                        height: MediaQuery.of(context).size.height * 0.03,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -351,29 +371,32 @@ class _EditPatientState extends State<EditPatient> {
                           Tooltip(
                             message: "Edit patient details",
                             verticalOffset: 40,
-                            child: GestureDetector(
-                              onTap: () async {
-                                if (_formKey.currentState.validate())
-                                  await editPatient(
-                                      name, gender, age, mobile, context);
-                                // Navigator.pop(context);
-                              },
-                              child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.08,
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                decoration: BoxDecoration(
-                                  color: primaryViolet,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "EDIT PATIENT",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w500,
+                            child: InkWell(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (_formKey.currentState.validate())
+                                    await editPatient(
+                                        name, gender, age, mobile, context);
+                                  // Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.07,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.75,
+                                  decoration: BoxDecoration(
+                                    color: primaryViolet,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "EDIT PATIENT",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -389,10 +412,77 @@ class _EditPatientState extends State<EditPatient> {
               SizedBox(
                 height: 20,
               ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.75,
+                height: MediaQuery.of(context).size.height * 0.07,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: primaryViolet,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Map(
+                          email: widget.email,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Track Location".toUpperCase(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.75,
+                height: MediaQuery.of(context).size.height * 0.07,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: primaryViolet,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MedicineRemainder(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Set Remainder".toUpperCase(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RemainderResult(),
+              ),
+            );
+          },
+          child: FaIcon(
+            FontAwesomeIcons.clock,
+          )),
     );
   }
 }

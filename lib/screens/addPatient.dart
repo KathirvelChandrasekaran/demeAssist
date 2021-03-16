@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,7 +20,11 @@ class _AddPatientState extends State<AddPatient> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
   TextEditingController _mobileController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  final AuthService authService = AuthService();
 
+  String email = "";
+  String error = "";
   final _formKey = GlobalKey<FormState>();
 
   var logger = Logger();
@@ -33,6 +38,12 @@ class _AddPatientState extends State<AddPatient> {
   bool enabled = true;
   List errors;
   String imageUrl;
+  bool isValidEmail(String email) {
+    bool validEmailId = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
+    return validEmailId == false ? true : false;
+  }
 
   void _genderStateHandle(int val) {
     setState(() {
@@ -64,7 +75,7 @@ class _AddPatientState extends State<AddPatient> {
   }
 
   Future<bool> addPatient(String patientName, String gender, int age,
-      int mobile, BuildContext context) async {
+      int mobile, String email, BuildContext context) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
       String fileName = basename(_image.path);
@@ -82,21 +93,42 @@ class _AddPatientState extends State<AddPatient> {
           .doc(uid)
           .collection("PatientDetails")
           .doc();
-      FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(documentReference);
-        if (!snapshot.exists) {
-          documentReference.set({
-            "uid": uid,
-            "patientName": patientName,
-            "imageURL": imageURL,
-            "mobile": mobile,
-            "age": age,
-            "gender": gender,
-          });
-          Navigator.pop(context);
-          return true;
-        }
-      });
+      FirebaseFirestore.instance.runTransaction(
+        (transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(documentReference);
+          if (!snapshot.exists) {
+            documentReference.set({
+              "uid": uid,
+              "patientName": patientName,
+              "imageURL": imageURL,
+              "mobile": mobile,
+              "age": age,
+              "gender": gender,
+              "email": email
+            });
+            // Navigator.pop(context);
+          }
+        },
+      );
+      DocumentReference documentReference1 =
+          FirebaseFirestore.instance.collection("PatientDetails").doc();
+      FirebaseFirestore.instance.runTransaction(
+        (transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(documentReference1);
+          if (!snapshot.exists) {
+            documentReference1.set({
+              "uid": uid,
+              "patientName": patientName,
+              "imageURL": imageURL,
+              "mobile": mobile,
+              "age": age,
+              "gender": gender,
+              "email": email
+            });
+            Navigator.pop(context);
+          }
+        },
+      );
       return true;
     } catch (e) {
       print(e.toString());
@@ -278,6 +310,39 @@ class _AddPatientState extends State<AddPatient> {
                           left: MediaQuery.of(context).size.width * 0.10,
                           right: MediaQuery.of(context).size.width * 0.10,
                         ),
+                        child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Mobile must not be empty.';
+                            }
+                            return null;
+                          },
+                          onChanged: (val) {
+                            setState(
+                              () {
+                                email = val.toString();
+                              },
+                            );
+                          },
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            icon: FaIcon(
+                              FontAwesomeIcons.mailBulk,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.10,
+                          right: MediaQuery.of(context).size.width * 0.10,
+                        ),
                         child: Row(
                           children: [
                             FaIcon(
@@ -335,9 +400,8 @@ class _AddPatientState extends State<AddPatient> {
                             child: GestureDetector(
                               onTap: () async {
                                 if (_formKey.currentState.validate())
-                                  await addPatient(
-                                      name, gender, age, mobile, context);
-                                // Navigator.pop(context);
+                                  await addPatient(name, gender, age, mobile,
+                                      email, context);
                               },
                               child: Container(
                                 height:

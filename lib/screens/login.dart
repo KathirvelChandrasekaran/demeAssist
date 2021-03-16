@@ -174,6 +174,13 @@ class _LoginState extends State<Login> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                error,
+                style: TextStyle(color: Colors.red),
+              ),
             ],
           ),
         ),
