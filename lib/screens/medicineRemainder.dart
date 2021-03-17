@@ -21,6 +21,21 @@ class _MedicineRemainderState extends State<MedicineRemainder> {
   int val = 1;
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
   List<String> days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  String email;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    FirebaseFirestore.instance
+        .collection('PatientDetails')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+        .get()
+        .then((value) => setState(() {
+              email = value.docs[0]['email'];
+            }));
+  }
+
   void _selectTime() async {
     // final TimeOfDay newTime = await showTimePicker(
     //   context: context,
@@ -254,7 +269,7 @@ class _MedicineRemainderState extends State<MedicineRemainder> {
                         onPressed: () {
                           if (_formKey.currentState.validate())
                             addRemainderDetails(name, dosage, val, days,
-                                radioVal, selectedTime, context);
+                                radioVal, selectedTime, context, email);
                         },
                         child: Text(
                           'SET REMINDER',
@@ -276,7 +291,7 @@ class _MedicineRemainderState extends State<MedicineRemainder> {
 }
 
 addRemainderDetails(String name, String dosage, int type, List days,
-    int radioVal, TimeOfDay time, BuildContext context) {
+    int radioVal, TimeOfDay time, BuildContext context, String email) {
   String typeVal;
   if (type == 2) typeVal = 'Tablet';
   if (type == 3) typeVal = 'Capsule';
@@ -285,15 +300,14 @@ addRemainderDetails(String name, String dosage, int type, List days,
   FirebaseFirestore.instance
       .collection('MedicineRemainder')
       .doc(FirebaseAuth.instance.currentUser.uid)
-      .collection(FirebaseAuth.instance.currentUser.email)
+      .collection('Medicines')
       .add({
-    'remainder': {
-      'name': name,
-      'dosage': dosage,
-      'type': typeVal,
-      'days': days,
-      'takeMedicine': radioVal == 1 ? 'Before Food' : 'After Food',
-      'time': {'hr': time.hour, 'min': time.minute, 'period': time.periodOffset}
-    }
-  });
+    'name': name,
+    'dosage': dosage,
+    'type': typeVal,
+    'days': days,
+    'takeMedicine': radioVal == 1 ? 'Before Food' : 'After Food',
+    'time': {'hr': time.hour, 'min': time.minute, 'period': time.periodOffset},
+    'email': email
+  }).then((value) => Navigator.pop(context));
 }

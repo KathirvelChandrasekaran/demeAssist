@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
     FirebaseFirestore.instance
         .collection('MedicineRemainder')
         .doc(FirebaseAuth.instance.currentUser.uid)
-        .collection(FirebaseAuth.instance.currentUser.email)
+        .collection('Medicines')
         .get()
         .then((value) => {
               setState(() {
@@ -296,20 +296,6 @@ class _HomeState extends State<Home> {
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FloatingActionButton(
-              onPressed: () {
-                // Navigator.pushNamed((context), '/addPatient');
-                AndroidAlarmManager.oneShotAt(
-                    DateTime(2021, 03, 16, 10, 36), 2, showAlarm);
-              },
-              child: FaIcon(
-                FontAwesomeIcons.clock,
-              ),
-              backgroundColor: primaryViolet,
-            ),
-            SizedBox(
-              height: 20,
-            ),
             Tooltip(
               message: "Add Patient",
               verticalOffset: 40,

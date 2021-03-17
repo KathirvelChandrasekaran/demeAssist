@@ -11,6 +11,7 @@ class RemainderResult extends StatefulWidget {
 
 class _RemainderResultState extends State<RemainderResult> {
   List<dynamic> days;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +36,7 @@ class _RemainderResultState extends State<RemainderResult> {
         stream: FirebaseFirestore.instance
             .collection('MedicineRemainder')
             .doc(FirebaseAuth.instance.currentUser.uid)
-            .collection(FirebaseAuth.instance.currentUser.email)
+            .collection('Medicines')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -50,15 +51,15 @@ class _RemainderResultState extends State<RemainderResult> {
               itemBuilder: (context, index) {
                 DocumentSnapshot remainderDetails =
                     snapshot.data.documents[index];
-                // print(remainderDetails['remainder']);
-                days = remainderDetails['remainder']['days'];
+                // print(remainderDetails);
+                days = remainderDetails['days'];
                 return Center(
                   child: Container(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          remainderDetails['remainder']['name'],
+                          remainderDetails['name'],
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -67,7 +68,7 @@ class _RemainderResultState extends State<RemainderResult> {
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         Text(
-                          remainderDetails['remainder']['dosage'],
+                          remainderDetails['dosage'],
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -76,7 +77,7 @@ class _RemainderResultState extends State<RemainderResult> {
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         Text(
-                          remainderDetails['remainder']['takeMedicine'],
+                          remainderDetails['takeMedicine'],
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -84,17 +85,35 @@ class _RemainderResultState extends State<RemainderResult> {
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
-                        Text(
-                          remainderDetails['remainder']['time'],
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              remainderDetails['time']['hr'].toString(),
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(":"),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              remainderDetails['time']['min'].toString(),
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         Text(
-                          remainderDetails['remainder']['type'],
+                          remainderDetails['type'],
                           style: TextStyle(
                             color: Colors.black,
                           ),
