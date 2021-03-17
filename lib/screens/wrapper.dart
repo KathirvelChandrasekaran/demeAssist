@@ -1,6 +1,7 @@
 import 'package:demeassist/models/user.dart';
 import 'package:demeassist/screens/home.dart';
-import 'package:demeassist/screens/startScreen.dart';
+import 'package:demeassist/screens/liquidSwipe.dart';
+// import 'package:demeassist/screens/startScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,7 @@ class _WrapperState extends State<Wrapper> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserModel>(context);
     if (user == null)
-      return StartScreen();
+      return LiquidSwipeScreen();
     else
       return Home();
   }
