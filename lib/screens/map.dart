@@ -21,7 +21,7 @@ class _MapState extends State<Map> {
 
   double lat, lng, homeLat, homeLng, distance;
   FlutterLocalNotificationsPlugin fltrNotification;
-
+  double checkLat, checkLng;
   @override
   void initState() {
     // TODO: implement initState
@@ -86,22 +86,23 @@ class _MapState extends State<Map> {
                 color: primaryViolet,
               ),
             );
-          return GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: LatLng(snapshot.data.docs[0]['latitude'],
+          else
+            return GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(snapshot.data.docs[0]['latitude'],
+                    snapshot.data.docs[0]['longitude']),
+                zoom: 18.0,
+              ),
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              compassEnabled: true,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+              myLocationButtonEnabled: true,
+              markers: _createMarker(snapshot.data.docs[0]['latitude'],
                   snapshot.data.docs[0]['longitude']),
-              zoom: 18.0,
-            ),
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            compassEnabled: true,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
-            myLocationButtonEnabled: true,
-            markers: _createMarker(snapshot.data.docs[0]['latitude'],
-                snapshot.data.docs[0]['longitude']),
-          );
+            );
         },
       ),
     );
@@ -126,17 +127,4 @@ class _MapState extends State<Map> {
       ),
     ].toSet();
   }
-
-  // _handleMarker(LatLng points) {
-  //   setState(() {
-  //     tracker = [];
-  //     tracker.add(
-  //       Marker(
-  //           markerId: MarkerId(
-  //             points.toString(),
-  //           ),
-  //           position: points),
-  //     );
-  //   });
-  // }
 }

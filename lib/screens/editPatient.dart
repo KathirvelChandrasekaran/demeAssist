@@ -286,6 +286,7 @@ class _EditPatientState extends State<EditPatient> {
                         ),
                         child: TextFormField(
                           keyboardType: TextInputType.phone,
+                          maxLength: 10,
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Mobile must not be empty.';

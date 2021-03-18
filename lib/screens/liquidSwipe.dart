@@ -1,5 +1,4 @@
 import 'package:demeassist/screens/startScreen.dart';
-import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 

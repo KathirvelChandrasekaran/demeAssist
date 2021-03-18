@@ -1,6 +1,6 @@
-import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/screens/editPatient.dart';
+import 'package:demeassist/screens/info.dart';
 import 'package:demeassist/screens/userProfile.dart';
 import 'package:demeassist/screens/wrapper.dart';
 import 'package:demeassist/service/authService.dart';
@@ -296,6 +296,27 @@ class _HomeState extends State<Home> {
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            Tooltip(
+              message: "Add Patient",
+              verticalOffset: 40,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Info(),
+                    ),
+                  );
+                },
+                child: FaIcon(
+                  FontAwesomeIcons.infoCircle,
+                ),
+                backgroundColor: primaryViolet,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             Tooltip(
               message: "Add Patient",
               verticalOffset: 40,

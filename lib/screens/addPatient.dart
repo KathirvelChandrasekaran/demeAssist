@@ -292,6 +292,7 @@ class _AddPatientState extends State<AddPatient> {
                               },
                             );
                           },
+                          maxLength: 10,
                           controller: _mobileController,
                           decoration: InputDecoration(
                             labelText: "Mobile",

@@ -41,6 +41,8 @@ class _EditProfileState extends State<EditProfile> {
   String imageUrl;
   bool edit;
 
+  String img;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -89,7 +91,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<bool> addUser(String userName, String gender, String age,
-      String mobile, BuildContext context) async {
+      String mobile, BuildContext context, bool edit) async {
     try {
       String uid = FirebaseAuth.instance.currentUser.uid;
       String fileName = basename(_image.path);
@@ -102,26 +104,42 @@ class _EditProfileState extends State<EditProfile> {
           await uploadTask.whenComplete(() => print("Upload completed"));
       String imageURL = await taskSnapshot.ref.getDownloadURL();
 
-      DocumentReference documentReference = FirebaseFirestore.instance
-          .collection("User")
-          .doc(uid)
-          .collection("UserDetails")
-          .doc();
-      FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(documentReference);
-        if (!snapshot.exists) {
-          documentReference.set({
-            "uid": uid,
-            "userName": userName,
-            "imageURL": imageURL,
-            "mobile": mobile,
-            "age": age,
-            "gender": gender,
-          });
-          Navigator.pushReplacementNamed(context, '/home');
-          return true;
-        }
-      });
+      if (edit == true)
+        FirebaseFirestore.instance
+            .collection('User')
+            .doc('UserDetails')
+            .collection('UserDetails')
+            .doc()
+            .update({
+          'uid': uid,
+          "userName": userName,
+          "imageURL": imageURL,
+          "mobile": mobile,
+          "age": age,
+          "gender": gender,
+        });
+      else {
+        DocumentReference documentReference = FirebaseFirestore.instance
+            .collection("User")
+            .doc(uid)
+            .collection("UserDetails")
+            .doc();
+        FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(documentReference);
+          if (!snapshot.exists) {
+            documentReference.set({
+              "uid": uid,
+              "userName": userName,
+              "imageURL": imageURL,
+              "mobile": mobile,
+              "age": age,
+              "gender": gender,
+            });
+            Navigator.pushReplacementNamed(context, '/home');
+            return true;
+          }
+        });
+      }
       return true;
     } catch (e) {
       print(e.toString());
@@ -184,8 +202,7 @@ class _EditProfileState extends State<EditProfile> {
                           getImage();
                           if (_image.path == null)
                             setState(() {
-                              imageUrl =
-                                  "https://firebasestorage.googleapis.com/v0/b/demeassist.appspot.com/o/User.png?alt=media&token=c1237149-2251-430d-a714-2b0a0bfd3188";
+                              imageUrl = widget.imageURL;
                             });
                         },
                         icon: FaIcon(
@@ -288,6 +305,7 @@ class _EditProfileState extends State<EditProfile> {
                             );
                           },
                           controller: _mobileController,
+                          maxLength: 10,
                           decoration: InputDecoration(
                             labelText: "Mobile",
                             icon: FaIcon(
@@ -361,8 +379,8 @@ class _EditProfileState extends State<EditProfile> {
                             verticalOffset: 40,
                             child: GestureDetector(
                               onTap: () async {
-                                await addUser(
-                                    name, gender, age, mobile, context);
+                                await addUser(name, gender, age, mobile,
+                                    context, widget.edit);
                               },
                               child: Container(
                                 height:
