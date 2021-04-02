@@ -104,7 +104,8 @@ class _AddPatientState extends State<AddPatient> {
               "mobile": mobile,
               "age": age,
               "gender": gender,
-              "email": email
+              "email": email,
+              'distanceLimit': 5
             });
             // Navigator.pop(context);
           }

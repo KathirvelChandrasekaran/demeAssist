@@ -67,15 +67,18 @@ class _HomeState extends State<Home> {
         .get()
         .then((value) => {
               setState(() {
-                hr = value.docs[0]['remainder']['time']['hr'];
-                mins = value.docs[0]['remainder']['time']['min'];
-                name = value.docs[0]['remainder']['name'];
-                dosage = value.docs[0]['remainder']['dosage'];
-                takeMedicine = value.docs[0]['remainder']['takeMedicine'];
-                type = value.docs[0]['remainder']['type'];
+                hr = value.docs[0]['time']['hr'];
+                mins = value.docs[0]['time']['min'];
+                name = value.docs[0]['name'];
+                dosage = value.docs[0]['dosage'];
+                takeMedicine = value.docs[0]['takeMedicine'];
+                type = value.docs[0]['type'];
               })
             })
-        .then((value) =>
+        .then((value) {
+      print(hr);
+      print(mins);
+    }).then((value) =>
             alarmNotification(hr, mins, name, dosage, takeMedicine, type));
   }
 
@@ -85,13 +88,13 @@ class _HomeState extends State<Home> {
 
   Future _showNotification(
       int hr, int min, String name, dosage, takeMedicine, type) async {
-    var time = Time(hr, min, 30);
+    var time = Time(hr, min - 1, 0);
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL_ID 4',
       'CHANNEL_NAME 4',
       "CHANNEL_DESCRIPTION 4",
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.max,
     );
     var iosChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
@@ -102,7 +105,7 @@ class _HomeState extends State<Home> {
       '$takeMedicine', //null
       time,
       platformChannelSpecifics,
-      payload: 'Test Payload',
+      payload: name,
     );
   }
 
@@ -297,7 +300,7 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Tooltip(
-              message: "Add Patient",
+              message: "About Dementia",
               verticalOffset: 40,
               child: FloatingActionButton(
                 onPressed: () {
@@ -338,7 +341,7 @@ class _HomeState extends State<Home> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text("Notification Clicked $payload"),
+        content: Text("Time to take medicine $payload"),
       ),
     );
   }

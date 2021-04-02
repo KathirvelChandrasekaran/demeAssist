@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -10,8 +11,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // ignore: must_be_immutable
 class Map extends StatefulWidget {
-  String email;
-  Map({this.email});
+  String email, patientName;
+  Map({this.email, this.patientName});
   @override
   _MapState createState() => _MapState();
 }
@@ -19,13 +20,23 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   Completer<GoogleMapController> _controller = Completer();
 
-  double lat, lng, homeLat, homeLng, distance;
+  double lat, lng, homeLat, homeLng, distance, distanceLimit;
   FlutterLocalNotificationsPlugin fltrNotification;
   double checkLat, checkLng;
+  int mobile;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    FirebaseFirestore.instance
+        .collection('PatientDetails')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+        .get()
+        .then((value) => {
+              setState(() {
+                this.distanceLimit = value.docs[0]['distanceLimit'];
+              })
+            });
+
     FirebaseFirestore.instance
         .collection('LocationDetails')
         .where('email', isEqualTo: widget.email)
@@ -53,8 +64,20 @@ class _MapState extends State<Map> {
       fltrNotification.initialize(initilizationsSettings,
           onSelectNotification: notificationSelected);
 
-      if (distance > 5) showNotification();
+      if (distance > distanceLimit) showNotification();
     });
+
+    FirebaseFirestore.instance
+        .collection('PatientDetails')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+        .get()
+        .then(
+          (value) => setState(
+            () {
+              this.mobile = value.docs[0]['mobile'];
+            },
+          ),
+        );
   }
 
   Future showNotification() async {
@@ -64,10 +87,10 @@ class _MapState extends State<Map> {
     var platform = new NotificationDetails(android: android, iOS: iOS);
     await fltrNotification.show(
       3,
-      'The patient have been came out of the home',
+      '${widget.patientName} have been came out of the home',
       'Do check his/her location',
       platform,
-      payload: 'Alert',
+      payload: 'Your loved one is wandering',
     );
   }
 
@@ -112,7 +135,22 @@ class _MapState extends State<Map> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text("$payload"),
+        // content: IconButton(
+        //     icon: FaIcon(
+        //       FontAwesomeIcons.phone,
+        //       color: primaryViolet,
+        //     ),
+        //     tooltip: "Make a call",
+        //     onPressed: () async {
+        //       await launch('tel://$mobile');
+        //     }),
+        content: Text(
+          payload,
+          style: TextStyle(
+            fontSize: 25,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

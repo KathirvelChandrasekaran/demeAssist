@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:demeassist/screens/map.dart';
 
@@ -31,9 +32,11 @@ class EditPatient extends StatefulWidget {
 
 class _EditPatientState extends State<EditPatient> {
   final _formKey = GlobalKey<FormState>();
+  final _formKey1 = GlobalKey<FormState>();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
   TextEditingController _mobileController = TextEditingController();
+  TextEditingController _distanceController = TextEditingController();
 
   String name = '';
   String gender = 'Male';
@@ -44,6 +47,7 @@ class _EditPatientState extends State<EditPatient> {
   bool enabled = true;
   List errors;
   String imageUrl;
+  double distance;
 
   void _genderStateHandle(int val) {
     setState(() {
@@ -426,6 +430,7 @@ class _EditPatientState extends State<EditPatient> {
                       MaterialPageRoute(
                         builder: (context) => Map(
                           email: widget.email,
+                          patientName: widget.patientName,
                         ),
                       ),
                     );
@@ -467,23 +472,168 @@ class _EditPatientState extends State<EditPatient> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RemainderResult(),
-              ),
-            );
-          },
-          child: FaIcon(
-            FontAwesomeIcons.clock,
-          )),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            tooltip: "Add distance Limit",
+            onPressed: () {
+              showMaterialModalBottomSheet(
+                expand: false,
+                context: context,
+                backgroundColor: Colors.white,
+                builder: (context) => Container(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                      ),
+                      Text(
+                        "Enter the distance limit!",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                      ),
+                      Form(
+                        key: _formKey1,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                left: MediaQuery.of(context).size.width * 0.10,
+                                right: MediaQuery.of(context).size.width * 0.10,
+                              ),
+                              child: TextFormField(
+                                keyboardType: TextInputType.phone,
+                                maxLength: 3,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Distance must not be empty.';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (val) {
+                                  setState(
+                                    () {
+                                      distance = double.parse(val);
+                                    },
+                                  );
+                                },
+                                controller: _distanceController,
+                                decoration: InputDecoration(
+                                  labelText: "Distance",
+                                  icon: FaIcon(
+                                    FontAwesomeIcons.sortNumericDownAlt,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.1,
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.75,
+                              height: MediaQuery.of(context).size.height * 0.07,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: primaryViolet,
+                                ),
+                                onPressed: () {
+                                  if (_formKey1.currentState.validate()) {
+                                    FirebaseFirestore.instance
+                                        .collection('User')
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser.uid)
+                                        .collection('PatientDetails')
+                                        .doc(widget.docID)
+                                        .update({'distanceLimit': distance})
+                                        .then(
+                                          (value) => print('Distance updated'),
+                                        )
+                                        .then(
+                                          (value) => FirebaseFirestore.instance
+                                              .collection('PatientDetails')
+                                              .where('uid',
+                                                  isEqualTo: FirebaseAuth
+                                                      .instance.currentUser.uid)
+                                              .get()
+                                              .then(
+                                                (value) => {
+                                                  FirebaseFirestore.instance
+                                                      .collection(
+                                                          'PatientDetails')
+                                                      .doc(value.docs[0].id)
+                                                      .update(
+                                                    {'distanceLimit': distance},
+                                                  ).then(
+                                                    (value) => print(
+                                                        'Distance updated'),
+                                                  ),
+                                                },
+                                              ),
+                                        );
+                                  }
+                                },
+                                child: Text(
+                                  "Add Distance limit".toUpperCase(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: FaIcon(
+              FontAwesomeIcons.peopleArrows,
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RemainderResult(),
+                ),
+              );
+            },
+            child: FaIcon(
+              FontAwesomeIcons.clock,
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
+          FloatingActionButton(
+            onPressed: () {},
+            child: FaIcon(
+              FontAwesomeIcons.photoVideo,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

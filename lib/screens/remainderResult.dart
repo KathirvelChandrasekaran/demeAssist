@@ -3,6 +3,7 @@ import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RemainderResult extends StatefulWidget {
   @override
@@ -23,7 +24,7 @@ class _RemainderResultState extends State<RemainderResult> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "Remainder Section".toUpperCase(),
+          "Reminder Section".toUpperCase(),
           style: TextStyle(
             color: primaryViolet,
             fontWeight: FontWeight.bold,
@@ -57,7 +58,7 @@ class _RemainderResultState extends State<RemainderResult> {
                   child: Container(
                     margin: EdgeInsets.all(20),
                     width: MediaQuery.of(context).size.width * 0.85,
-                    height: MediaQuery.of(context).size.height * 0.40,
+                    height: MediaQuery.of(context).size.height * 0.45,
                     decoration: BoxDecoration(
                       color: primaryViolet,
                       borderRadius: BorderRadius.circular(10),
@@ -238,6 +239,30 @@ class _RemainderResultState extends State<RemainderResult> {
                                 .toList(),
                           ],
                         ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.02,
+                        ),
+                        IconButton(
+                          tooltip: "Delete reminder",
+                          icon: FaIcon(
+                            FontAwesomeIcons.trash,
+                            color: Colors.white,
+                          ),
+                          onPressed: () async {
+                            var ref = await FirebaseFirestore.instance
+                                .collection('MedicineRemainder')
+                                .doc(FirebaseAuth.instance.currentUser.uid)
+                                .collection('Medicines')
+                                .get();
+                            FirebaseFirestore.instance
+                                .collection('MedicineRemainder')
+                                .doc(FirebaseAuth.instance.currentUser.uid)
+                                .collection('Medicines')
+                                .doc(ref.docs[0].id)
+                                .delete();
+                            print(ref.docs[0].id);
+                          },
+                        )
                       ],
                     ),
                   ),
