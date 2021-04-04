@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/screens/editPatient.dart';
 import 'package:demeassist/screens/info.dart';
+import 'package:demeassist/screens/patientWrapper.dart';
 import 'package:demeassist/screens/userProfile.dart';
 import 'package:demeassist/screens/wrapper.dart';
 import 'package:demeassist/service/authService.dart';
@@ -182,7 +183,7 @@ class _HomeState extends State<Home> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditPatient(
+                                    builder: (context) => PatientWrapper(
                                       age: patienDetails['age'],
                                       gender: patienDetails['gender'],
                                       imageURL: patienDetails['imageURL'],

@@ -19,7 +19,6 @@ class _ChewieListItemState extends State<ChewieListItem> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _chewieController = ChewieController(
         videoPlayerController: widget.videoPlayerController,

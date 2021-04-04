@@ -371,45 +371,28 @@ class _EditPatientState extends State<EditPatient> {
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.03,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Tooltip(
-                            message: "Edit patient details",
-                            verticalOffset: 40,
-                            child: InkWell(
-                              child: GestureDetector(
-                                onTap: () async {
-                                  if (_formKey.currentState.validate())
-                                    await editPatient(
-                                        name, gender, age, mobile, context);
-                                  // Navigator.pop(context);
-                                },
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.07,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.75,
-                                  decoration: BoxDecoration(
-                                    color: primaryViolet,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "EDIT PATIENT",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        height: MediaQuery.of(context).size.height * 0.07,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: primaryViolet,
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState.validate())
+                              await editPatient(
+                                  name, gender, age, mobile, context);
+                            // Navigator.pop(context);
+                          },
+                          child: Text(
+                            "Edit Patient".toUpperCase(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -417,62 +400,6 @@ class _EditPatientState extends State<EditPatient> {
               ),
               SizedBox(
                 height: 20,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.75,
-                height: MediaQuery.of(context).size.height * 0.07,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: primaryViolet,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Map(
-                          email: widget.email,
-                          patientName: widget.patientName,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Track Location".toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.75,
-                height: MediaQuery.of(context).size.height * 0.07,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: primaryViolet,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MedicineRemainder(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Set Remainder".toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
               ),
             ],
           ),
@@ -622,24 +549,6 @@ class _EditPatientState extends State<EditPatient> {
             },
             child: FaIcon(
               FontAwesomeIcons.clock,
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.02,
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VideoSection(
-                    docID: widget.docID,
-                  ),
-                ),
-              );
-            },
-            child: FaIcon(
-              FontAwesomeIcons.photoVideo,
             ),
           ),
         ],
