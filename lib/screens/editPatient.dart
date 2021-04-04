@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/screens/medicineRemainder.dart';
 import 'package:demeassist/screens/remainderResult.dart';
+import 'package:demeassist/screens/videoSection.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -627,7 +628,16 @@ class _EditPatientState extends State<EditPatient> {
             height: MediaQuery.of(context).size.height * 0.02,
           ),
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VideoSection(
+                    docID: widget.docID,
+                  ),
+                ),
+              );
+            },
             child: FaIcon(
               FontAwesomeIcons.photoVideo,
             ),

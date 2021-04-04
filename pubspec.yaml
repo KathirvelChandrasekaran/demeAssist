@@ -50,6 +50,9 @@ dependencies:
   url_launcher: ^5.7.10
   modal_bottom_sheet: ^2.0.0
   curved_navigation_bar: ^0.3.7
+  video_player: ^2.1.0
+  chewie: ^1.0.0
+  video_compress: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
