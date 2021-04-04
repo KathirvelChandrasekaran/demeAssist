@@ -22,7 +22,7 @@ class VideoSection extends StatefulWidget {
 
 class _VideoSectionState extends State<VideoSection> {
   File _video, _thumbNail;
-  bool disabled;
+  bool disabled, showProgress;
   VideoPlayerController playerController;
   VoidCallback listener;
   String email;
@@ -34,6 +34,9 @@ class _VideoSectionState extends State<VideoSection> {
       return;
     }
     await VideoCompress.setLogLevel(0);
+    setState(() {
+      showProgress = true;
+    });
     MediaInfo info = await VideoCompress.compressVideo(
       video.path,
       quality: VideoQuality.MediumQuality,
@@ -52,6 +55,7 @@ class _VideoSectionState extends State<VideoSection> {
 
     setState(() {
       _thumbNail = thumbnailFile;
+      showProgress = false;
     });
     if (_video.path.length > 2)
       setState(() {
@@ -68,6 +72,7 @@ class _VideoSectionState extends State<VideoSection> {
     };
     setState(() {
       disabled = true;
+      showProgress = false;
     });
     print(widget.docID);
     FirebaseFirestore.instance
@@ -100,8 +105,9 @@ class _VideoSectionState extends State<VideoSection> {
     UploadTask uploadTask1 = firebaseStorageRef1.putFile(
         _thumbNail, SettableMetadata(contentType: 'image/jpeg'));
 
-    TaskSnapshot taskSnapshot =
-        await uploadTask.whenComplete(() => print("Upload completed"));
+    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => Container(
+          child: CircularProgressIndicator(),
+        ));
     TaskSnapshot taskSnapshot1 = await uploadTask1
         .whenComplete(() => print("Thumbnail Upload completed"));
     String videoURL = await taskSnapshot.ref.getDownloadURL();
@@ -162,6 +168,9 @@ class _VideoSectionState extends State<VideoSection> {
                     ? null
                     : () {
                         uploadVideo(context);
+                        setState(() {
+                          showProgress = true;
+                        });
                       },
                 child: Text(
                   "Upload Video".toUpperCase(),
@@ -173,6 +182,13 @@ class _VideoSectionState extends State<VideoSection> {
                 ),
               ),
             ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: showProgress ? LinearProgressIndicator() : null,
+            )
           ],
         ),
       ),

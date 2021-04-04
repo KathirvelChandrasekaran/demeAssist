@@ -3,8 +3,9 @@ import 'package:demeassist/screens/chewieListItem.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:chewie/chewie.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewGallery extends StatefulWidget {
@@ -55,10 +56,60 @@ class _ViewGalleryState extends State<ViewGallery> {
                 itemBuilder: (context, index) {
                   DocumentSnapshot urls = snapshot.data.documents[index];
                   print(urls['videoURL']);
-                  return Container(
-                    child: ChewieListItem(
-                      videoPlayerController: VideoPlayerController.network(
-                        urls['videoURL'],
+                  return GestureDetector(
+                    onLongPress: () {
+                      HapticFeedback.vibrate();
+                      showModalBottomSheet<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            color: primaryViolet,
+                            child: Center(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.75,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.07,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.white,
+                                    elevation: 5,
+                                  ),
+                                  onPressed: () {
+                                    FirebaseFirestore.instance
+                                        .collection('VideoURL')
+                                        .doc(widget.email)
+                                        .collection('URL')
+                                        .doc(urls.id)
+                                        .delete();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Delete Video".toUpperCase(),
+                                    style: TextStyle(
+                                      color: primaryViolet,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.85,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
+                      ),
+                      child: ChewieListItem(
+                        videoPlayerController: VideoPlayerController.network(
+                          urls['videoURL'],
+                        ),
                       ),
                     ),
                   );
