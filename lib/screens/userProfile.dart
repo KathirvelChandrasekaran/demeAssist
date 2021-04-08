@@ -107,7 +107,7 @@ class UserProfile extends StatelessWidget {
                             padding: const EdgeInsets.all(10.0),
                             child: ButtonTheme(
                               height: MediaQuery.of(context).size.height * 0.07,
-                              child: RaisedButton.icon(
+                              child: ElevatedButton.icon(
                                 icon: FaIcon(
                                   FontAwesomeIcons.telegram,
                                   color: Colors.white,
@@ -122,8 +122,8 @@ class UserProfile extends StatelessWidget {
                                     fontSize: 19,
                                   ),
                                 ),
-                                color: primaryViolet,
                               ),
+                              buttonColor: primaryViolet,
                             ),
                           ),
                     SizedBox(

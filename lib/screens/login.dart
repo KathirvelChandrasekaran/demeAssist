@@ -136,7 +136,7 @@ class _LoginState extends State<Login> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          GestureDetector(
+                          InkWell(
                             onTap: () async {
                               if (_formKey.currentState.validate()) {
                                 dynamic result = await authService.login(

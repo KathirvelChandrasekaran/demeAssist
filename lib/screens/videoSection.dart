@@ -27,6 +27,7 @@ class _VideoSectionState extends State<VideoSection> {
   VoidCallback listener;
   String email;
   String compressedPath;
+  int length;
 
   Future getVideo() async {
     var video = await ImagePicker.pickVideo(source: ImageSource.camera);
@@ -46,7 +47,10 @@ class _VideoSectionState extends State<VideoSection> {
 
     setState(() {
       _video = info.file;
+      length = _video.lengthSync();
     });
+
+    print(length);
 
     final thumbnailFile = await VideoCompress.getFileThumbnail(_video.path,
         quality: 50, // default(100)
@@ -188,7 +192,7 @@ class _VideoSectionState extends State<VideoSection> {
             Container(
               width: MediaQuery.of(context).size.width * 0.3,
               child: showProgress ? LinearProgressIndicator() : null,
-            )
+            ),
           ],
         ),
       ),

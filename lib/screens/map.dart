@@ -64,6 +64,8 @@ class _MapState extends State<Map> {
       fltrNotification.initialize(initilizationsSettings,
           onSelectNotification: notificationSelected);
 
+      print("Distance " + distanceLimit.toString());
+
       if (distance > distanceLimit) showNotification();
     });
 
