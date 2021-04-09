@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/screens/viewGallery.dart';
+import 'package:demeassist/screens/viewImage.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -175,9 +176,9 @@ class _UploadImageState extends State<UploadImage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ViewGallery(
-                      // email: this.email,
-                      ),
+                  builder: (context) => ViewImage(
+                    email: this.email,
+                  ),
                 ),
               );
             },
