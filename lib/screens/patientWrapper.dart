@@ -4,6 +4,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:demeassist/screens/editPatient.dart';
 import 'package:demeassist/screens/map.dart';
 import 'package:demeassist/screens/medicineRemainder.dart';
+import 'package:demeassist/screens/uploadImage.dart';
 import 'package:demeassist/screens/videoSection.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,9 @@ class _PatientWrapperState extends State<PatientWrapper> {
     VideoSection(
       docID: docID,
     ),
+    UploadImage(
+      docID: docID,
+    )
   ];
   @override
   Widget build(BuildContext context) {
@@ -89,6 +93,10 @@ class _PatientWrapperState extends State<PatientWrapper> {
             Icons.video_collection_outlined,
             color: Colors.white,
           ),
+          Icon(
+            Icons.cloud_upload_rounded,
+            color: Colors.white,
+          )
         ],
       ),
     );

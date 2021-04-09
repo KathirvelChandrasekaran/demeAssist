@@ -53,6 +53,7 @@ dependencies:
   video_player: ^2.1.0
   chewie: ^1.0.0
   video_compress: ^3.0.0
+  flutter_image_compress: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
