@@ -163,20 +163,6 @@ class _EditPatientState extends State<EditPatient> {
             letterSpacing: 2,
           ),
         ),
-        actions: [
-          IconButton(
-              icon: FaIcon(
-                FontAwesomeIcons.microphoneAlt,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VoiceRecording(),
-                  ),
-                );
-              })
-        ],
       ),
       body: GestureDetector(
         onTap: () {

@@ -17,6 +17,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
 
 const simpleTaskKey = "simpleTask";
 
@@ -89,7 +90,7 @@ class _HomeState extends State<Home> {
     //     icon: "@mipmap/app_icon",
     //   );
     // }();
-
+    checkConnectivity();
     tz.initializeTimeZones();
 
     var androidInitilize = new AndroidInitializationSettings('app_icon');
@@ -127,8 +128,10 @@ class _HomeState extends State<Home> {
         .then((value) {
       print(hr);
       print(mins);
-    }).then((value) =>
-            alarmNotification(hr, mins, name, dosage, takeMedicine, type));
+    }).then((value) => {
+              print("Medicine remainder Started"),
+              alarmNotification(hr, mins, name, dosage, takeMedicine, type),
+            });
   }
 
   alarmNotification(int hr, int min, String name, dosage, takeMedicine, type) {
@@ -150,12 +153,42 @@ class _HomeState extends State<Home> {
         android: androidChannelSpecifics, iOS: iosChannelSpecifics);
     await fltrNotification.showDailyAtTime(
       0,
-      'Time to take the medicine $name. Medicine type $type. Dosgae $dosage',
+      'Time to take the medicine $name. \nMedicine type $type. Dosgae $dosage',
       '$takeMedicine', //null
       time,
       platformChannelSpecifics,
       payload: name,
     );
+  }
+
+  checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (!((connectivityResult == ConnectivityResult.mobile) ||
+        (connectivityResult == ConnectivityResult.wifi)))
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            elevation: 50,
+            title: Text(
+              "No internet connectivity 🤦‍♂️",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              "Please connect the device to internet.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          );
+        },
+      );
   }
 
   @override

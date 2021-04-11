@@ -2,6 +2,7 @@ import 'package:demeassist/screens/forgotPassword.dart';
 import 'package:demeassist/service/authService.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:connectivity/connectivity.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -25,6 +26,41 @@ class _LoginState extends State<Login> {
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
     return validEmailId == false ? true : false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnectivity();
+  }
+
+  checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (!((connectivityResult == ConnectivityResult.mobile) ||
+        (connectivityResult == ConnectivityResult.wifi)))
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              elevation: 50,
+              title: Text(
+                "No internet connectivity 🤦‍♂️",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Text(
+                "Please connect the device to internet.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            );
+          });
   }
 
   @override

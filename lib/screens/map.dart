@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:connectivity/connectivity.dart';
 
 // ignore: must_be_immutable
 class Map extends StatefulWidget {
@@ -28,6 +29,7 @@ class _MapState extends State<Map> {
   @override
   void initState() {
     super.initState();
+    checkConnectivity();
     FirebaseFirestore.instance
         .collection('PatientDetails')
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser.uid)
@@ -111,6 +113,35 @@ class _MapState extends State<Map> {
       platform,
       payload: 'Your loved one is wandering',
     );
+  }
+
+  checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (!((connectivityResult == ConnectivityResult.mobile) ||
+        (connectivityResult == ConnectivityResult.wifi)))
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              elevation: 50,
+              title: Text(
+                "No internet connectivity 🤦‍♂️",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Text(
+                "Please connect the device to internet.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            );
+          });
   }
 
   @override
