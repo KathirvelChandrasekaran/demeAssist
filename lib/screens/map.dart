@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geolocator/geolocator.dart';
@@ -66,7 +67,23 @@ class _MapState extends State<Map> {
 
       print("Distance " + distanceLimit.toString());
 
-      if (distance > distanceLimit) showNotification();
+      () async {
+        final androidConfig = FlutterBackgroundAndroidConfig(
+          notificationTitle: "Title of the notification",
+          notificationText: "Text of the notification",
+          notificationImportance: AndroidNotificationImportance.High,
+          // Default is ic_launcher from folder mipmap
+        );
+        FlutterBackground.initialize();
+        FlutterBackground.enableBackgroundExecution();
+        bool success =
+            await FlutterBackground.initialize(androidConfig: androidConfig);
+        if (success) {
+          if (distance > distanceLimit) showNotification();
+        }
+      }();
+
+      // if (distance > distanceLimit) showNotification();
     });
 
     FirebaseFirestore.instance
@@ -99,36 +116,65 @@ class _MapState extends State<Map> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('LocationDetails')
-            .where('email', isEqualTo: widget.email)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(
-              child: SpinKitCubeGrid(
-                color: primaryViolet,
-              ),
-            );
-          else
-            return GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(snapshot.data.docs[0]['latitude'],
-                    snapshot.data.docs[0]['longitude']),
-                zoom: 18.0,
-              ),
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              compassEnabled: true,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
+      body: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('LocationDetails')
+                  .where('email', isEqualTo: widget.email)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return Center(
+                    child: SpinKitCubeGrid(
+                      color: primaryViolet,
+                    ),
+                  );
+                else
+                  return GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(snapshot.data.docs[0]['latitude'],
+                          snapshot.data.docs[0]['longitude']),
+                      zoom: 18.0,
+                    ),
+                    mapType: MapType.normal,
+                    myLocationEnabled: true,
+                    compassEnabled: true,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                    myLocationButtonEnabled: true,
+                    markers: _createMarker(snapshot.data.docs[0]['latitude'],
+                        snapshot.data.docs[0]['longitude']),
+                  );
               },
-              myLocationButtonEnabled: true,
-              markers: _createMarker(snapshot.data.docs[0]['latitude'],
-                  snapshot.data.docs[0]['longitude']),
-            );
-        },
+            ),
+          ),
+          Container(
+            height: 20,
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('PatientDetails')
+                  .where('uid',
+                      isEqualTo: FirebaseAuth.instance.currentUser.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return Text("");
+                else {
+                  if (distance > snapshot.data.docs[0]['distanceLimit'])
+                    showNotification();
+                  else
+                    print("no changes");
+
+                  return Text("");
+                }
+              },
+            ),
+          )
+        ],
       ),
     );
   }

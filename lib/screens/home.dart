@@ -1,5 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demeassist/screens/editPatient.dart';
 import 'package:demeassist/screens/info.dart';
 import 'package:demeassist/screens/patientWrapper.dart';
 import 'package:demeassist/screens/userProfile.dart';
@@ -12,6 +14,35 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:workmanager/workmanager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+const simpleTaskKey = "simpleTask";
+
+void callbackDispatcher() {
+  Workmanager.executeTask((task, inputData) async {
+    switch (task) {
+      case simpleTaskKey:
+        print("$simpleTaskKey was executed. inputData = $inputData");
+
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setBool("test", true);
+        print("Bool from prefs: ${prefs.getBool("test")}");
+
+        break;
+      case Workmanager.iOSBackgroundTask:
+        print("The iOS background fetch was triggered");
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        print(
+            "You can access other plugins in the background, for example Directory.getTemporaryDirectory(): $tempPath");
+        break;
+    }
+
+    return Future.value(true);
+  });
+}
 
 class Home extends StatefulWidget {
   @override
@@ -51,6 +82,14 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    // () async {
+    //   await BackgroundLocation.setAndroidNotification(
+    //     title: "DemeAssist is running in background",
+    //     message: "This helps you to inform about patient",
+    //     icon: "@mipmap/app_icon",
+    //   );
+    // }();
+
     tz.initializeTimeZones();
 
     var androidInitilize = new AndroidInitializationSettings('app_icon');
@@ -60,6 +99,15 @@ class _HomeState extends State<Home> {
     fltrNotification = new FlutterLocalNotificationsPlugin();
     fltrNotification.initialize(initilizationsSettings,
         onSelectNotification: notificationSelected);
+
+    // Workmanager.initialize(
+    //   callbackDispatcher,
+    //   isInDebugMode: true,
+    // );
+    // Workmanager.registerOneOffTask(
+    //   "1",
+    //   simpleTaskKey,
+    // );
 
     FirebaseFirestore.instance
         .collection('MedicineRemainder')

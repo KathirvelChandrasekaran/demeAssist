@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demeassist/screens/medicineRemainder.dart';
 import 'package:demeassist/screens/remainderResult.dart';
-import 'package:demeassist/screens/videoSection.dart';
+import 'package:demeassist/screens/voiceRecording.dart';
 import 'package:demeassist/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,8 +11,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import 'package:demeassist/screens/map.dart';
 
 class EditPatient extends StatefulWidget {
   String patientName, gender, imageURL, docID, email;
@@ -133,7 +130,6 @@ class _EditPatientState extends State<EditPatient> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _nameController.text = widget.patientName;
     _mobileController.text = widget.mobile.toString();
@@ -167,6 +163,20 @@ class _EditPatientState extends State<EditPatient> {
             letterSpacing: 2,
           ),
         ),
+        actions: [
+          IconButton(
+              icon: FaIcon(
+                FontAwesomeIcons.microphoneAlt,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VoiceRecording(),
+                  ),
+                );
+              })
+        ],
       ),
       body: GestureDetector(
         onTap: () {

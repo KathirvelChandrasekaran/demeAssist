@@ -55,6 +55,13 @@ dependencies:
   video_compress: ^3.0.0
   flutter_image_compress: ^1.0.0
   image_viewer: ^1.0.0
+  workmanager: ^0.2.3
+  shared_preferences: ^2.0.5
+  path_provider: ^2.0.1
+  background_location: ^0.4.1
+  flutter_sound:
+  permission_handler:
+  flutter_background: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
