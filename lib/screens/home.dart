@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
 
   bool found = false;
   int hr, mins;
-  String name, dosage, type, takeMedicine;
+  String name, dosage, type, patientName, takeMedicine;
 
   FlutterLocalNotificationsPlugin fltrNotification;
 
@@ -109,6 +109,17 @@ class _HomeState extends State<Home> {
     //   "1",
     //   simpleTaskKey,
     // );
+    //
+
+    FirebaseFirestore.instance
+        .collection("PatientDetails")
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+        .get()
+        .then((value) {
+      setState(() {
+        patientName = value.docs[0]['patientName'];
+      });
+    });
 
     FirebaseFirestore.instance
         .collection('MedicineRemainder')
@@ -130,16 +141,18 @@ class _HomeState extends State<Home> {
       print(mins);
     }).then((value) => {
               print("Medicine remainder Started"),
-              alarmNotification(hr, mins, name, dosage, takeMedicine, type),
+              alarmNotification(
+                  hr, mins, name, dosage, takeMedicine, type, patientName),
             });
   }
 
-  alarmNotification(int hr, int min, String name, dosage, takeMedicine, type) {
-    _showNotification(hr, min, name, dosage, takeMedicine, type);
+  alarmNotification(
+      int hr, int min, String name, dosage, takeMedicine, type, patientName) {
+    _showNotification(hr, min, name, dosage, takeMedicine, type, patientName);
   }
 
-  Future _showNotification(
-      int hr, int min, String name, dosage, takeMedicine, type) async {
+  Future _showNotification(int hr, int min, String name, dosage, takeMedicine,
+      type, patientName) async {
     var time = Time(hr, min - 1, 0);
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL_ID 4',
@@ -153,11 +166,11 @@ class _HomeState extends State<Home> {
         android: androidChannelSpecifics, iOS: iosChannelSpecifics);
     await fltrNotification.showDailyAtTime(
       0,
-      'Time to take the medicine $name. \nMedicine type $type. Dosgae $dosage',
-      '$takeMedicine', //null
+      'Hi $patientName!!! Time to take the medicine $name.',
+      'Medicine type $type. Dosgae $dosage', //null
       time,
       platformChannelSpecifics,
-      payload: name,
+      payload: takeMedicine,
     );
   }
 
